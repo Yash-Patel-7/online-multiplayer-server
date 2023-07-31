@@ -1,0 +1,6 @@
+PLAY|11|Yash Patel|
+MOVE|6|X|2,2|
+MOVE|6|X|1,2|
+MOVE|6|X|1,1|
+DRAW|2|R|
+DRAW|2|S|

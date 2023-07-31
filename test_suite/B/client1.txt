@@ -1,0 +1,12 @@
+PLAY|10|Joe Smith|
+MOVE|6|X|1,2|
+MOVE|6|X|4,2|
+MOVE|6|X|1,0|
+MOVE|6|O|2,1|
+MOVE|7|X|PLAY|
+MOVD|6|X|1,2|
+INVL|17|!Protocol error.|
+WAIT|0|
+OVER|27|L|One player has resigned.|
+BEGN|11|X|Opponent|
+PLAY|12|X|Joe Smith|

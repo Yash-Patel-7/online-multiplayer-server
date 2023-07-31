@@ -1,0 +1,32 @@
+Tests:	game-level errors
+
+These testcases test how the server handles:
+1.	Client trying to move to an already occupied space
+2.	Client trying to move a space out of bounds
+3.	Client trying to move for the opponent
+4.	Invalid format inputted by the client
+
+In all cases, the server will send an INVL message and allow the client to correct itself.
+
+Tests:	Application-level errors, such as sending an unexpected message (e.g., sending PLAY at any time after the first
+		message, or the client sending MOVD)
+
+These testcases test how the server handles:
+1.	A PLAY message received after a PLAY message was already received
+		a.	messages sent by the client at inappropiate times
+2.	A message received that would have been sent by the server
+		a.	the client is sending messages that should only be sent by the server
+
+In all cases, the server will send an INVL message and allow the client to correct itself.
+
+Tests:	Presentation-level errors, such as sending a message with the wrong number of fields or where the message length does
+		not match the stated length, or sending data that cannot be interpreted as a message at all
+
+These testcases test how the server handles:
+1.	Excess fields in a message sent by the client
+2.	Lack of fields in a message sent by the client
+3.	An incorrect stated length compared to the message length
+4.	Gibberish messages that do not mean anything to the server
+
+In all cases, the server will send an INVL message and close the connection. The server will not crash or perform unexpected
+behavior.

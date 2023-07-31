@@ -1,0 +1,9 @@
+Tests:	how the server handles multiple fully functioning game that contain no errors in clients' messages
+
+1.	Game between clients 1 and 2 test how the server handles draw requests, including requests made when it is not their turn
+2.	Game between clients 3 and 4 test how the server handles resign messages from the client
+3.	Game between clients 5 and 6 test how the server handles every space being occupied and no player has matched 3 spaces in a row
+		a.	The server will send a OVER message to both clients indicating it is a draw.
+4.	Game between clients 7 and 8 test how the server detects a winner and sends the correct message to each player
+
+In all games, the server never crashes and will send the correct message to each client.

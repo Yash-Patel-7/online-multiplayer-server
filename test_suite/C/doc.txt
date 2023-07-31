@@ -1,0 +1,6 @@
+Tests:	Session-level errors, such as the connection dropping unexpectedly
+
+The server's handling of a connection dropped unexpectedly can be seen in ttts.c:
+
+1.	We set the disposition to SIG_IGN to ignore the signal 
+2.	We allow write() to return -1 and set errno to EPIPE.

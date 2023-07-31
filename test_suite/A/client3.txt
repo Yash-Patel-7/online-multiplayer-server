@@ -1,0 +1,5 @@
+PLAY|8|Barbara|
+MOVE|6|X|1,2|
+MOVE|6|X|3,1|
+MOVE|6|X|2,2|
+RSGN|0|

@@ -1,0 +1,5 @@
+PLAY|13|Jasmit Singh|
+MOVE|6|O|3,3|
+MOVE|6|O|3,2|
+DRAW|2|S|
+DRAW|2|A|
