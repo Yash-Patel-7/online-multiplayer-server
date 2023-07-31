@@ -1,0 +1,112 @@
+Project III
+Online multiplayer game of Tic Tac Toe
+
+The following is the list of all requirements that were tested in test_suite. The structure of this text file matches the structure of the test_suite. 
+-	Next to every requirement, there is a (test_suite_test_case) that should be read as test_suite/test_case
+
+Project III: Tic-Tac_Toe On-line Requirements
+
+A.	Role of ttts (test_suite_A)
+		1.	Arg: port number it will use for connection requests
+		2.	Pair up players
+		3.	Choose who will go first
+		4.	Receive commands from both players
+		5.	Track the state of the grid
+				a.	Reject any invalid moves
+				b.	Determine when game has ended
+B.	Message Format (test_suite_A)
+		1.	Messages are broken into fields, where each field consists of at least one character followed by a vertical bar.
+		2.	Fields:
+				a.	First field is always a 4-character code
+				b.	Second field is always the length of the remaining message in bytes (string containing decimal integer 0-255). 
+				c.	Do not include the vertical bar after the second field in the length for remaining message
+				4.	All subsequent fields are of variable length
+		3.	Message will always end with vertical bar (Implementation uses this to detect improper formatted messages)
+C.	Messages sent by CLIENT (test_suite_A)
+		1.	PLAY
+				a.	Sent once connection is established
+				b.	Third field is name of player
+				c.	Expected response from server is WAIT, else if name too long, then INVL
+		2.	MOVE
+				a.	Third field is the player’s role 
+				b.	Fourth field is the grid cell they are claiming.
+				c.	The server will respond with MOVD if the move is accepted, or INVL if the move is not allowed.
+		3.	RSGN
+				a.	The server will respond with OVER
+		4.	DRAW
+				a.	Depending on the message, this indicates that the player:
+						1.	suggests a draw (S), 
+						2.	accepting (A) a draw proposed by their opponent.
+						3.	rejecting (R) a draw proposed by their opponent.
+						4.	Note that DRAW A or DRAW R can only be sent in response to receiving a DRAW S from the server.
+D.	Messages sent by SERVER (test_suite_A)
+		1.	WAIT
+				a.	Sent in response to PLAY message
+		2.	BEGN
+				a.	Third field is the role (X or O) assigned to the player receiving the message 
+				b.	Fourth field is the name of their opponent.
+				c.	If the role is X, the client will respond with MOVE, RSNG, or DRAW. Otherwise, the client will wait for MOVD.
+		3.	MOVD
+				a.	Third field is the role of the player making the move 
+				b.	Fourth field gives the current state of the grid.
+				c.	The player that made the move will wait for their opponent’s move.
+				d.	The opponent client will respond with MOVE, RSGN, or DRAW.
+		4.	INVL
+				a.	Third field is arbitrary text explaining why the message was rejected. 
+				b.	INVL is both to reject illegal moves and to report protocol errors.
+				c.	When used to reject a protocol error (such as a message being sent at an inappropriate time), the explanation must begin with an exclamation point (!).
+		5.	DRAW
+				a.	If one player suggests a draw, the server will send a draw suggestion to their opponent.
+				b.	The expected response is DRAW A or DRAW R.
+				c.	After receiving DRAW A, the server ends the game and sends OVER to both clients.
+				d.	After receiving DRAW R, the server sends DRAW R to the player that had sent DRAW S.
+		6.	OVER
+				a.	The second field indicates whether the recipient has
+						1.	won (W)
+						2.	lost (L)
+						3.	drawn (D). 
+				b.	The third field is arbitrary text explaining the outcome
+E.	Game Ends When (test_suite_A)
+		1.	One player wins by placing 3 marks in a single row, column, or diagonal
+		2.	Both players draw by filling the board without either player winning
+		3.	One player resigns
+		4.	Both players agree to draw
+F.	Game Setup (test_suite_A)
+		1.	Connections are initiated by the client, which sends PLAY. 
+		2.	In response, the server will reply with WAIT or INVL. 
+		3.	Clients will wait for the next message.
+		4.	Once the server has connected two players, it will send BEGN to both players, along with their role and their opponent’s name. 
+		5.	Player X will move first.
+G. Player Roles (test_suite_A)
+		1.	Moving Player
+				a.	The client for the player who is moving will send MOVE, RSGN, or DRAW S.
+				b.	In response to MOVE, the server will reply MOVD or INVL. 
+				c.	A response of MOVD means the move was accepted, and it is now the opposing player’s turn.
+				d.	In response to RSGN, the server will reply OVER.
+				e.	In response to DRAW S, the server will reply with DRAW R if the opposing player chooses not to draw, or OVER if the opposing player has chosen to draw.
+		2.	Waiting Player
+				a.	The client for the player who is not moving will wait for the server to indicate the opposing player’s move, which will be one of MOVD, DRAW S, or OVER.
+				b.	After receiving MOVD, it is now that player’s turn.
+				c.	After receiving DRAW S, the player can respond with DRAW R or DRAW A and then wait for the next move.
+				d.	After receiving OVER, the game has ended.
+
+H.	Implementation of Concurrent Games With Interruption (test_suite_A)
+		1.	ttts handles multiple concurrent games. That is, ttts:
+				a.	listens for incoming connection requests while also managing one or more active games. 
+				b.	require all players to have unique names. 
+						i.	That is, a PLAY message including a name that matches a name of a player in an on-going game will receive INVL with the explanation “name already in use”. 
+				c.	Implementation uses locks to ensure that access to the shared list of in-use names is performed safely. 
+I.	Extra Credit (test_suite_A)
+		1.	players are allowed to resign or request a draw when it is not their turn.
+		2.	implementation waits for incoming messages on both connections simultaneously, and cancel blocked calls to read() when necessary. 
+		3.	When using multiple threads to manage a game, ttts uses locks to protect the integrity of the game state.
+J.	Errors
+		1.	The following errors are detected by the server:
+    			a.	Game-level errors, such as trying to move in an occupied grid cell (test_suite_B)
+    			b.	Application-level errors, such as sending an unexpected message (e.g., sending PLAY at any time after the first message, or the client sending MOVD) (test_suite_B)
+    			c.	Presentation-level errors, such as sending a message with the wrong number of fields or where the message length does not match the stated length, or sending data that cannot be interpreted as a message at all (test_suite_B)
+    			d.	Session-level errors, such as the connection dropping unexpectedly (test_suite_C)
+		2.	For game- and application-level errors, it should send INVL and allow the client to correct itself. (test_suite_B)
+		3.	For presentation-level errors, send INVL and then close the connection. (test_suite_B)
+		4.	For dealing with unexpected disconnects, set the disposition to SIG_IGN to ignore the signal and allow write() to return -1 and set errno to EPIPE. (test_suite_C)
+
